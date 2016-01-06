@@ -16,14 +16,10 @@
     var width = 1000;
     var height = 1000;
     var levelHeight = 200;
-    var ratio = 6;
 
     var svg = d3.select("body").append("svg")
             .attr("width", 2 * width)
             .attr("height", 2 * height);
-
-
-    //var gg = svg.getBoundingClientRect();
 
     var data_url = "https://raw.githubusercontent.com/Kademi/kademi-dev/master/src/main/webapp/static/scratch/funnels/data.json";
     d3.json(data_url, function(json) {
@@ -44,7 +40,6 @@
 
         for (var i = 0; i < json.stages[0].sources.length; i++)
         {
-            //var rad = Math.min(Math.sqrt(json.stages[0].sources[i].count) * ratio, levelHeight / 2 - 2);
             var rad = Math.sqrt(json.stages[0].sources[i].count / maxCount) * (levelHeight / 2 - 20);
             adjustTopWidth += 2 * rad;
         }
@@ -54,7 +49,6 @@
         var adjustButtonWidth = 0;
         for (var i = 0; i < json.stages[size - 1].sources.length; i++)
         {
-            //var rad = Math.min(Math.sqrt(json.stages[size - 1].sources[i].count) * ratio, levelHeight / 2 - 2);
             var rad = Math.sqrt(json.stages[size - 1].sources[i].count / maxCount) * (levelHeight / 2 - 20);
             adjustButtonWidth += 2 * rad;
         }
@@ -126,15 +120,12 @@
         }
 
         var force = d3.layout.force()
-                //.gravity(-0.006)
-                //.size(trapBox.center());
                 .size([width, height]);
 
         var node = svg.selectAll("circle")
                 .data(data_set)
                 .enter().append("svg:circle")
                 .attr("r", function(d) {
-                    //var rad = Math.min(Math.sqrt(d.count) * ratio, levelHeight / 2 - 2);
                     var rad = Math.sqrt(d.count / maxCount) * (levelHeight / 2 - 20);
                     return rad;
                 })
@@ -143,13 +134,14 @@
                 .call(force.drag);
         force
                 .nodes(data_set)
+                //.charge(-200)
+                //.gravity(0.002)
+                .gravity(-0.0002)
                 .charge(-200)
-                .gravity(0.002)
                 .on("tick", function() {
                     node
                             .attr("cy", function(d) {
                                 var idx = d.level;
-                                //var rad = Math.min(Math.sqrt(d.count) * ratio, levelHeight / 2 - 2);
                                 var rad = Math.sqrt(d.count / maxCount) * (levelHeight / 2 - 20);
                                 var trap = new Trapezoidal([[trapBox.left(idx * totalHeight / size), idx * totalHeight / size],
                                     [trapBox.right(idx * totalHeight / size), idx * totalHeight / size],
@@ -159,7 +151,6 @@
                             })
                             .attr("cx", function(d) {
                                 var idx = d.level;
-                                //var rad = Math.min(Math.sqrt(d.count) * ratio, levelHeight / 2 - 2);
                                 var rad = Math.sqrt(d.count / maxCount) * (levelHeight / 2 - 20);
                                 var trap = new Trapezoidal([[trapBox.left(idx * totalHeight / size), idx * totalHeight / size],
                                     [trapBox.right(idx * totalHeight / size), idx * totalHeight / size],
